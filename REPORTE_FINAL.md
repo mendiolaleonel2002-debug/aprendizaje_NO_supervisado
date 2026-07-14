@@ -1,49 +1,53 @@
-# Reporte final — Segmentación de clientes de RetailMax
+# Reporte de recomendaciones para el equipo de marketing de RetailMax
 
 ## Resumen ejecutivo
 
-Se analizaron 200 clientes sin valores faltantes ni duplicados. Para segmentarlos se aplicó K-Means a edad, ingreso anual y puntuación de gasto, después de estandarizar las variables. Primero se implementó el modelo de tres clusters solicitado en la actividad. Como extensión analítica, se comparó `k=2…10` y se eligieron seis clusters para el modelo comercial final porque `k=6` obtuvo el mejor coeficiente silhouette (0.427) y produjo perfiles útiles para marketing.
+El presente reporte traduce los resultados del análisis exploratorio y del modelo K-Means en acciones concretas para el equipo de marketing de RetailMax. Se analizaron 200 clientes considerando edad, ingreso anual y puntuación de gasto. Después de estandarizar estas variables y comparar distintas cantidades de grupos, el método del codo mostró que **cinco clusters** ofrecen un equilibrio adecuado entre detalle e interpretabilidad. La segmentación resultante permite abandonar una estrategia uniforme y diseñar comunicaciones más relevantes para cada perfil.
 
-Los dos frentes con mayor potencial son: retener a 39 clientes VIP de alto valor y entender/activar a 33 clientes con alto ingreso pero bajo gasto. Las campañas deben validarse con pruebas A/B y métricas de negocio; la segmentación es una hipótesis accionable, no una relación causal.
+La principal recomendación es concentrar los primeros experimentos en dos segmentos: los clientes de ingreso y gasto altos, por su valor actual, y los clientes de ingreso alto pero gasto bajo, por su potencial de crecimiento. Las campañas deben evaluarse mediante grupos de control y métricas incrementales; pertenecer a un cluster no demuestra que una campaña causará una compra.
 
-## Hallazgos del análisis exploratorio
+## Metodología y hallazgos generales
 
-- La edad media es 38.85 años y la mediana 36; el rango va de 18 a 70 años.
-- El ingreso medio masculino (62.23 k$) supera descriptivamente al femenino (59.25 k$), pero la diferencia no es estadísticamente clara (Mann–Whitney, p=0.414).
-- Los clientes de 18–39 años tienen mayor gasto medio y mayor variabilidad. Después de los 40 años el gasto tiende a disminuir, con excepciones individuales.
-- Las mujeres representan 56% de la muestra y los hombres 44%; la mediana de gasto es 50 en ambos grupos.
-- La correlación ingreso–gasto es 0.010 y la correlación edad–ingreso es −0.012: no hay tendencias lineales globales apreciables.
-- A pesar de esa correlación nula, ingreso y gasto forman zonas visibles con dispersión muy distinta por rango de ingreso, por lo que una única campaña para toda la base perdería información comercial importante.
+El conjunto de datos no presenta valores faltantes ni registros duplicados. La edad media es 38.85 años y el ingreso anual promedio es 60.56 mil dólares. Las correlaciones ingreso–gasto (0.010) y edad–ingreso (−0.012) son prácticamente nulas. Sin embargo, la visualización conjunta revela perfiles diferenciados que una correlación lineal no captura.
 
-## Metodología
+Para K-Means se excluyó `CustomerID`, porque sólo identifica clientes, y se dejaron inicialmente fuera las categorías de género. Las variables numéricas fueron transformadas con `StandardScaler` para que edad, ingreso y gasto tuvieran una contribución comparable en las distancias. Se probaron modelos con 3, 5 y 10 clusters y se calculó el WCSS entre 1 y 10. El cambio de pendiente alrededor de cinco justificó seleccionar **k=5** para las recomendaciones siguientes.
 
-Se excluyó `CustomerID` por ser sólo un identificador y `Gender` por ser categórica y no aportar una separación descriptiva clara. Se comprobó que el DataFrame de features conserva los índices originales y se estandarizaron las tres variables numéricas para evitar que sus escalas dominaran la distancia euclidiana. La implementación inicial usa exactamente `k=3`, `init='k-means++'`, `max_iter=300`, `n_init=10` y `random_state=42`. Después se comparó `k=2…10` mediante inercia y silhouette; `k=6` alcanzó el mayor silhouette (0.427) y se utilizó como modelo final ampliado.
+## Recomendaciones por segmento
 
-## Segmentos y acciones
+### Cluster 0 — Clientes cautelosos de bajo valor actual
 
-| Segmento | Clientes | Perfil promedio | Recomendación |
-|---|---:|---|---|
-| VIP de alto valor | 39 | 32.7 años; 86.5 k$; gasto 82.1 | Retención VIP, acceso anticipado y recompensas por recomendación. |
-| Alto ingreso, bajo gasto | 33 | 41.9 años; 88.9 k$; gasto 17.0 | Investigar barreras y probar propuestas de valor personalizadas. |
-| Jóvenes entusiastas | 24 | 25.2 años; 25.8 k$; gasto 76.9 | Fidelización móvil, referidos y productos de entrada. |
-| Maduros cautelosos | 21 | 45.5 años; 26.3 k$; gasto 19.4 | Mensajes de ahorro, esenciales y descuentos selectivos. |
-| Tradicionales de gasto medio | 45 | 56.3 años; 54.3 k$; gasto 49.1 | Confianza, servicio y venta cruzada moderada. |
-| Jóvenes de gasto medio | 38 | 26.7 años; 57.6 k$; gasto 47.8 | Recomendaciones digitales para elevar frecuencia y ticket. |
+Este grupo reúne 20 clientes con edad media de **46.25 años**, ingreso anual medio de **26.75 k$** y puntuación de gasto de **18.35**. Se recomienda utilizar mensajes centrados en ahorro, productos esenciales, cupones con monto mínimo y beneficios fáciles de comprender. No conviene invertir inicialmente en descuentos agresivos, pues el ingreso disponible y el gasto observado son bajos. El objetivo debe ser aumentar gradualmente la frecuencia sin reducir excesivamente el margen.
+
+### Cluster 1 — Jóvenes entusiastas
+
+Los 54 integrantes tienen una edad media de **25.19 años**, ingreso de **41.09 k$** y gasto de **62.24**. Aunque su poder adquisitivo es moderado, muestran buena disposición de compra. RetailMax puede ofrecer programas de referidos, recompensas móviles, productos de entrada, paquetes asequibles y contenido para redes sociales. Es importante controlar la presión promocional y evitar incentivar consumo poco responsable.
+
+### Cluster 2 — Clientes VIP de alto valor
+
+Este segmento contiene 40 clientes con edad media de **32.88 años**, ingreso de **86.10 k$** y la mayor puntuación de gasto: **81.53**. Debe recibir prioridad de retención mediante acceso anticipado, atención preferente, recomendaciones premium, recompensas por lealtad y experiencias exclusivas. El éxito no debe medirse sólo por ventas inmediatas, sino también mediante retención, margen, frecuencia y valor de vida del cliente.
+
+### Cluster 3 — Alto ingreso y bajo gasto
+
+Los 39 clientes del grupo tienen edad media de **39.87 años**, ingreso de **86.10 k$** y gasto de apenas **19.36**. Representan la mayor oportunidad de activación, pero no debe asumirse que responderán a descuentos. Se recomienda investigar barreras mediante encuestas breves y pruebas A/B de propuestas distintas: conveniencia, surtido premium, entrega, garantía o servicio personalizado. Las campañas deben explicar valor y relevancia antes de reducir precios.
+
+### Cluster 4 — Clientes maduros de gasto medio
+
+Este es un grupo de 47 clientes con edad media de **55.64 años**, ingreso de **54.38 k$** y gasto de **48.85**. Se sugieren comunicaciones claras, beneficios de confianza, servicio posventa, recordatorios oportunos y venta cruzada moderada. Puede funcionar una combinación de canales digitales y tradicionales, permitiendo que el cliente elija su medio preferido.
 
 ## Plan de implementación y medición
 
-1. Priorizar VIP y alto ingreso/bajo gasto por su potencial económico.
-2. Dividir aleatoriamente cada segmento entre tratamiento y control; no comparar segmentos entre sí como si fueran equivalentes.
-3. Medir conversión, ingreso y margen incremental, ticket, retención y tasa de baja de comunicaciones.
-4. Incorporar recencia, frecuencia, valor monetario, canal y categoría en la siguiente versión.
-5. Reentrenar periódicamente y vigilar cambios en tamaños, centroides y desempeño de campañas.
+RetailMax debería ejecutar campañas piloto dentro de cada segmento, asignando aleatoriamente clientes a tratamiento y control. Las métricas principales serán conversión incremental, ingreso y margen incremental, ticket promedio, frecuencia, retención y tasa de baja de comunicaciones. Comparar únicamente el desempeño bruto entre clusters sería incorrecto, porque parten de comportamientos diferentes.
 
-## Limitaciones
+Se recomienda comenzar con los clusters 2 y 3: proteger el valor existente del grupo VIP y experimentar con la activación del grupo de alto ingreso y bajo gasto. Después podrán desplegarse campañas de fidelización para jóvenes entusiastas y estrategias de frecuencia para los segmentos 0 y 4.
 
-El análisis usa una muestra pequeña y sólo tres variables conductuales/demográficas. K-Means favorece grupos compactos y obliga a asignar cada cliente a un solo cluster. Silhouette mide estructura geométrica, no rentabilidad. Edad y género deben utilizarse con cuidado para evitar trato discriminatorio. Las recomendaciones son hipótesis que requieren experimentación antes de una adopción amplia.
+## Limitaciones y uso responsable
+
+La segmentación utiliza una muestra pequeña y sólo tres variables. K-Means obliga a asignar cada cliente a un único grupo y favorece clusters compactos. Además, la puntuación de gasto es una medida interna, no una estimación directa de rentabilidad. En una siguiente versión conviene incorporar recencia, frecuencia, valor monetario, canal, categorías compradas y respuesta histórica a campañas.
+
+La edad y el género deben manejarse con cuidado. Al incorporar género como variable estandarizada, el modelo tiende a formar grupos separados por sexo, lo que puede generar campañas poco útiles o discriminatorias. Se recomienda utilizar género sólo para auditar resultados y equidad, no para restringir ofertas. Finalmente, los clusters deben recalcularse periódicamente y validarse con resultados comerciales reales.
 
 ## Entregables reproducibles
 
-- `1_EDA.ipynb`: calidad de datos, visualizaciones y respuestas a las tres preguntas.
-- `2_clustering.ipynb`: preparación, selección de k, modelo, perfiles, recomendaciones y exportación.
-- `data/retailmax_segmentado.csv`: asignación de segmento por cliente, generada al ejecutar el segundo notebook.
+- `1_EDA.ipynb`: análisis de calidad, diez preguntas exploratorias, visualizaciones e interpretaciones.
+- `2_clustering.ipynb`: escalamiento, modelos K-Means, método del codo, perfiles y recomendaciones.
+- `data/retailmax_segmentado.csv`: asignación reproducible de segmentos por cliente.
